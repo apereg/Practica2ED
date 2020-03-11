@@ -78,6 +78,8 @@ public abstract class AbstractQueueWithRefTests {
 		S2.remove("ABC", 0);
 	}
 	
+	/* TESTS CREADOS POR EL ALUMNO */
+	
 	@Test
 	public void testClear() {
 		S2.clear();
@@ -164,7 +166,6 @@ public abstract class AbstractQueueWithRefTests {
 	public void testRemoveWithOutElementQueue() {
 		S2.remove("H1Z1", 1);
 	}
-	
 	
 
 }

@@ -2,7 +2,6 @@ package ule.edi.queuewithrep;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Random;
 
 import ule.edi.exceptions.EmptyCollectionException;
 
@@ -11,7 +10,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	// atributos
 
 	private final int capacityDefault = 10;
-	
+
 	private int capacity;
 
 	ElemQueueWithRep<T>[] data;
@@ -80,11 +79,10 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	@SuppressWarnings("unchecked")
 	private void expandCapacity() {
 		ElemQueueWithRep<T>[] nuevo = (ElemQueueWithRep<T>[]) new ElemQueueWithRep[data.length * 2];
-		for (int i = 0; i < data.length; i++) {
+		for (int i = 0; i < this.count; i++) {
 			nuevo[i] = this.data[i];
 		}
 		this.data = nuevo;
-		this.count++;
 		this.capacity = this.capacity * 2;
 	}
 
@@ -96,8 +94,6 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				return;
 			}
 		}
-		
-		//TODO Como comprobar que es necesario expandir la capacidad
 		if (this.count == this.capacity)
 			this.expandCapacity();
 
@@ -107,10 +103,6 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public void add(T element) {
-		
-		System.out.println("Se va a añadir " +element.toString());
-		System.out.println("El contador de elementos es " +count);
-
 		for (int i = 0; i < this.count; i++) {
 			if (this.data[i].elem.equals(element)) {
 				this.data[i].num++;
@@ -129,7 +121,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	public void remove(T element, int times) {
 		if (this.isEmpty() || !this.contains(element))
 			throw new NoSuchElementException();
-		
+
 		count(element);
 		int pos = this.find(element);
 		if (this.data[pos].num > times) {
@@ -197,7 +189,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public int count(T element) {
-		if (this.contains(element)) 
+		if (this.contains(element))
 			return this.data[this.find(element)].num;
 		return 0;
 
