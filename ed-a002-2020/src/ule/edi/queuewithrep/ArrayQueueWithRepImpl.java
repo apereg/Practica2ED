@@ -11,6 +11,8 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	// atributos
 
 	private final int capacityDefault = 10;
+	
+	private int capacity;
 
 	ElemQueueWithRep<T>[] data;
 	private int count;
@@ -65,12 +67,14 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	public ArrayQueueWithRepImpl() {
 		data = new ElemQueueWithRep[capacityDefault];
 		count = 0;
+		this.capacity = capacityDefault;
 	}
 
 	@SuppressWarnings("unchecked")
 	public ArrayQueueWithRepImpl(int capacity) {
 		data = new ElemQueueWithRep[capacity];
 		count = 0;
+		this.capacity = capacity;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,6 +85,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		}
 		this.data = nuevo;
 		this.count++;
+		this.capacity = this.capacity * 2;
 	}
 
 	@Override
@@ -93,7 +98,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		}
 		
 		//TODO Como comprobar que es necesario expandir la capacidad
-		if (this.count == this.data.length)
+		if (this.count == this.capacity)
 			this.expandCapacity();
 
 		this.data[count] = new ElemQueueWithRep<T>(element, times);
@@ -102,6 +107,9 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public void add(T element) {
+		
+		System.out.println("Se va a añadir " +element.toString());
+		System.out.println("El contador de elementos es " +count);
 
 		for (int i = 0; i < this.count; i++) {
 			if (this.data[i].elem.equals(element)) {
@@ -121,9 +129,11 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	public void remove(T element, int times) {
 		if (this.isEmpty() || !this.contains(element))
 			throw new NoSuchElementException();
+		
+		count(element);
 		int pos = this.find(element);
 		if (this.data[pos].num > times) {
-			this.data[pos].num = this.data[pos].num - times;
+			this.data[pos].num -= times;
 		} else if (this.data[pos].num == times) {
 			if (count > 1) {
 				this.data[pos] = this.data[count - 1];
@@ -131,6 +141,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 			} else {
 				this.data[pos] = null;
 			}
+			this.count--;
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -186,7 +197,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public int count(T element) {
-		if (this.contains(element))
+		if (this.contains(element)) 
 			return this.data[this.find(element)].num;
 		return 0;
 

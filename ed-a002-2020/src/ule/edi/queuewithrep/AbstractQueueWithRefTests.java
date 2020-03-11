@@ -75,7 +75,7 @@ public abstract class AbstractQueueWithRefTests {
 	@Test
 	//Se pueden eliminar cero instancias de un elemento con remove(x, 0): ")
 	public void testRemoveZeroInstances() {
-		S1.remove("ABC", 0);
+		S2.remove("ABC", 0);
 	}
 	
 	@Test
@@ -109,6 +109,60 @@ public abstract class AbstractQueueWithRefTests {
 		iterator.next();
 		assertFalse(iterator.hasNext());
 		iterator.next();
+	}
+	
+	@Test
+	public void testRemoveFirst() throws EmptyCollectionException {
+		assertEquals(S2.remove(), 5);
+	}
+	
+	@Test
+	public void testRemoveFirstUnique() throws EmptyCollectionException {
+		S1.add("H1Z1");
+		assertEquals(S1.remove(), 1);
+	}
+	
+	@Test (expected = EmptyCollectionException.class)
+	public void testRemoveFirstVoidQueue() throws EmptyCollectionException {
+		S1.remove();
+	}
+	
+	@Test
+	public void testRemove() {
+		assertEquals(S2.size(), 20);
+		S2.remove("ABC", 5);
+		assertEquals(S2.size(), 15);
+	}
+	
+	@Test
+	public void testRemoveLessTimes() {
+		assertEquals(S2.count("ABC"), 5);
+		S2.remove("ABC", 2);
+		assertEquals(S2.count("ABC"), 3);
+	}
+	
+	@Test
+	public void testRemoveUnique() {
+		assertTrue(S1.isEmpty());
+		S1.add("ABC", 3);
+		assertFalse(S1.isEmpty());
+		S1.remove("ABC", 3);
+		assertTrue(S1.isEmpty());
+	}
+	
+	@Test (expected = NoSuchElementException.class)
+	public void testRemoveVoidQueue() {
+		S1.remove("H1Z1", 1);
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public void testRemoveWrongTimes() {
+		S2.remove("ABC", 150000);
+	}
+	
+	@Test (expected = NoSuchElementException.class)
+	public void testRemoveWithOutElementQueue() {
+		S2.remove("H1Z1", 1);
 	}
 	
 	
