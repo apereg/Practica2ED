@@ -86,34 +86,35 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	@Override
 	public void add(T element, int times) {
 		for (int i = 0; i < this.count; i++) {
-			if(this.data[i].elem.equals(element)) {
-				this.data[i].num+=times;
+			if (this.data[i].elem.equals(element)) {
+				this.data[i].num += times;
 				return;
 			}
 		}
 		
-		if(this.count == this.data.length)
+		//TODO Como comprobar que es necesario expandir la capacidad
+		if (this.count == this.data.length)
 			this.expandCapacity();
-		
+
 		this.data[count] = new ElemQueueWithRep<T>(element, times);
 		this.count++;
 	}
 
 	@Override
 	public void add(T element) {
-		
+
 		for (int i = 0; i < this.count; i++) {
-			if(this.data[i].elem.equals(element)) {
+			if (this.data[i].elem.equals(element)) {
 				this.data[i].num++;
 				return;
 			}
 		}
-		
-		if(this.count == this.data.length)
+
+		if (this.count == this.data.length)
 			this.expandCapacity();
-		
+
 		this.data[count] = new ElemQueueWithRep<T>(element, 1);
-		this.count++:
+		this.count++;
 	}
 
 	@Override
@@ -121,9 +122,9 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		if (this.isEmpty() || !this.contains(element))
 			throw new NoSuchElementException();
 		int pos = this.find(element);
-		if(this.data[pos].num > times) {
+		if (this.data[pos].num > times) {
 			this.data[pos].num = this.data[pos].num - times;
-		} else if(this.data[pos].num == times) {
+		} else if (this.data[pos].num == times) {
 			if (count > 1) {
 				this.data[pos] = this.data[count - 1];
 				this.data[count - 1] = null;
@@ -156,12 +157,13 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		for (int i = 0; i < this.count; i++) {
 			this.data[i] = null;
 		}
+		this.count = 0;
 	}
 
 	@Override
 	public boolean contains(T element) {
 		for (int i = 0; i < count; i++) {
-			if (element.equals(data[i]))
+			if (data[i].elem.equals(element))
 				return true;
 		}
 		return false;
@@ -184,7 +186,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public int count(T element) {
-		if(this.contains(element))
+		if (this.contains(element))
 			return this.data[this.find(element)].num;
 		return 0;
 
@@ -204,7 +206,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		buffer.append("(");
 		for (int i = 0; i < this.count; i++) {
 			for (int j = 0; j < this.data[i].num; j++) {
-				buffer.append(this.data[i].elem.toString()).append(" ");			
+				buffer.append(this.data[i].elem.toString()).append(" ");
 			}
 		}
 
@@ -212,13 +214,16 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 		return buffer.toString();
 	}
-	
+
 	private int find(T element) {
+		int pos = -1;
 		for (int i = 0; i < this.count; i++) {
-			if(this.data[i].elem.equals(element))
-				return i;
+			if (this.data[i].elem.equals(element)) {
+				pos = i;
+				break;
+			}
 		}
-		return -1;		
+		return pos;
 	}
 
 }

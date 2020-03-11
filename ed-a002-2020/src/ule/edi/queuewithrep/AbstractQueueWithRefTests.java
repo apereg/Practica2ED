@@ -78,8 +78,38 @@ public abstract class AbstractQueueWithRefTests {
 		S1.remove("ABC", 0);
 	}
 	
-	// TODO AÑADIR MAS TESTS
+	@Test
+	public void testClear() {
+		S2.clear();
+		assertEquals(S2.size(), 0);
+	}
 	
+	@Test
+	public void testContainsWrong() {
+		assertFalse(S1.contains("H1Z1"));
+	}
+	
+	@Test
+	public void testCountWrong() {
+		assertEquals(S1.count("H1Z1"), 0);
+	}
+	
+	@Test
+	public void testAddRedundant() {
+		S2.add("ABC");
+		assertEquals(S2.count("ABC"), 6);
+	}
+	
+	@Test (expected = NoSuchElementException.class)
+	public void testIterator() {
+		Iterator<String> iterator = S2.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(iterator.next(), "ABC");
+		iterator.next();
+		iterator.next();
+		assertFalse(iterator.hasNext());
+		iterator.next();
+	}
 	
 	
 
