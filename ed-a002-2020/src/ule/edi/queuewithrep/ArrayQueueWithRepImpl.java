@@ -32,7 +32,8 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	@SuppressWarnings("hiding")
 	public class ArrayQueueWithRepIterator<T> implements Iterator<T> {
 
-		int count, current;
+		int count;
+		int current;
 		ElemQueueWithRep<T>[] cola;
 
 		public ArrayQueueWithRepIterator(ElemQueueWithRep<T>[] cola, int count) {
@@ -76,22 +77,43 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	private void expandCapacity() {
 		ElemQueueWithRep<T>[] nuevo = (ElemQueueWithRep<T>[]) new ElemQueueWithRep[data.length * 2];
 		for (int i = 0; i < data.length; i++) {
-			nuevo[i] = data[i];
+			nuevo[i] = this.data[i];
 		}
-		data = nuevo;
-		count++;
+		this.data = nuevo;
+		this.count++;
 	}
 
 	@Override
 	public void add(T element, int times) {
-		// TODO
-
+		for (int i = 0; i < this.count; i++) {
+			if(this.data[i].elem.equals(element)) {
+				this.data[i].num+=times;
+				return;
+			}
+		}
+		
+		if(this.count == this.data.length)
+			this.expandCapacity();
+		
+		this.data[count] = new ElemQueueWithRep<T>(element, times);
+		this.count++;
 	}
 
 	@Override
 	public void add(T element) {
-		// TODO
-
+		
+		for (int i = 0; i < this.count; i++) {
+			if(this.data[i].elem.equals(element)) {
+				this.data[i].num++;
+				return;
+			}
+		}
+		
+		if(this.count == this.data.length)
+			this.expandCapacity();
+		
+		this.data[count] = new ElemQueueWithRep<T>(element, 1);
+		this.count++:
 	}
 
 	@Override
@@ -99,7 +121,18 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		if (this.isEmpty() || !this.contains(element))
 			throw new NoSuchElementException();
 		int pos = this.find(element);
-		if(this.data[i].num > times)
+		if(this.data[pos].num > times) {
+			this.data[pos].num = this.data[pos].num - times;
+		} else if(this.data[pos].num == times) {
+			if (count > 1) {
+				this.data[pos] = this.data[count - 1];
+				this.data[count - 1] = null;
+			} else {
+				this.data[pos] = null;
+			}
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -169,9 +202,11 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		final StringBuffer buffer = new StringBuffer();
 
 		buffer.append("(");
-
-		// TODO Ir añadiendo en buffer las cadenas para la representación de la cola.
-		// Ejemplo: (A, A, A, B )
+		for (int i = 0; i < this.count; i++) {
+			for (int j = 0; j < this.data[i].num; j++) {
+				buffer.append(this.data[i].elem.toString()).append(" ");			
+			}
+		}
 
 		buffer.append(")");
 
