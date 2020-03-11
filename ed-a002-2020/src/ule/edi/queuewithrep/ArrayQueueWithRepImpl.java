@@ -175,7 +175,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return count == 0;
+		return this.count == 0;
 	}
 
 	@Override
@@ -204,7 +204,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	@Override
 	public String toString() {
 
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 
 		buffer.append("(");
 		for (int i = 0; i < this.count; i++) {
