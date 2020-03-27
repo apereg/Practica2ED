@@ -30,17 +30,33 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 	@SuppressWarnings("hiding")
 	public class LinkedQueueWithRepIterator<T> implements Iterator<T> {
 
+		QueueWithRepNode<T> nodo;
+		int actualSize;
+
 		public LinkedQueueWithRepIterator(QueueWithRepNode<T> nodo) {
+			this.nodo = nodo;
+			this.actualSize = -1;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return true;
+			return this.nodo != null;
 		}
 
 		@Override
 		public T next() {
-			return null;
+			if (!this.hasNext())
+				throw new NoSuchElementException();
+			if (this.actualSize == -1) {
+				this.actualSize = this.nodo.num;
+			}
+			T elemReturn = this.nodo.elem;
+			this.actualSize--;
+			if (this.actualSize == 0) {
+				this.nodo = this.nodo.next;
+				this.actualSize = -1;
+			}
+			return elemReturn;
 		}
 
 	}
@@ -53,80 +69,141 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 	/////////////
 	@Override
 	public void add(T element) {
+		if(element == null)
+			throw new NullPointerException();	
 		if (this.isEmpty()) {
 			this.front = new QueueWithRepNode<>(element, 1);
 			this.count++;
 			return;
 		}
 		
-		/* Se recorre la lista buscando el elemento */
-		QueueWithRepNode<T> aux = this.front;
-		while(aux != null) {
-			if(aux.elem.equals(element)) {
-				aux.num++;
-				return;
+		if (this.front.next == null) {
+			if (this.front.elem.equals(element)) {
+				this.front.num++;
+			} else {
+				this.front.next = new QueueWithRepNode<>(element, 1);
+				this.count++;
 			}
-			aux = aux.next;
-		}		
-		
-		/* Si no se encuentra se añade al final */
-		aux = new QueueWithRepNode<>(element, 1);
-		this.count++;
-	}
-
-	@Override
-	public void add(T element, int times) {
-		if (this.isEmpty()) {
-			this.front = new QueueWithRepNode<>(element, times);
-			this.count++;
 			return;
 		}
 		
 		/* Se recorre la lista buscando el elemento */
 		QueueWithRepNode<T> aux = this.front;
-		while(aux != null) {
-			if(aux.elem.equals(element)) {
+		while (aux.next != null) {
+			if (aux.elem.equals(element)) {
+				aux.num++;
+				return;
+			}
+			aux = aux.next;
+		}
+
+		/* Si no se encuentra se añade al final */
+		aux.next = new QueueWithRepNode<>(element, 1);
+
+		this.count++;
+	}
+
+	@Override
+	public void add(T element, int times) {
+		if(element == null)
+			throw new NullPointerException();	
+		if (times <= 0) 
+			throw new IllegalArgumentException();
+		if (this.isEmpty()) {
+			this.front = new QueueWithRepNode<>(element, times);
+			this.count++;
+			return;
+		}	
+
+		if (this.front.next == null) {
+			if (this.front.elem.equals(element)) {
+				this.front.num += times;
+			} else {
+				this.front.next = new QueueWithRepNode<>(element, times);
+				this.count++;
+			}
+			return;
+		}
+		
+		/* Se recorre la lista buscando el elemento */
+		QueueWithRepNode<T> aux = this.front;
+		while (aux.next != null) {
+			if (aux.elem.equals(element)) {
 				aux.num += times;
 				return;
 			}
 			aux = aux.next;
-		}		
+		}
+		
+		/* Se comprueba si es el ultimo */
+		if (aux.elem.equals(element)) {
+			aux.num += times;
+			return;
+		}
 		
 		/* Si no se encuentra se añade al final */
-		aux = new QueueWithRepNode<>(element, times);
+		aux.next = new QueueWithRepNode<>(element, times);
 		this.count++;
 	}
 
 	@Override
 	public void remove(T element, int times) {
-		// todo
+		if(element == null)
+			throw new NullPointerException();
+		if (this.isEmpty() || !this.contains(element))
+			throw new NoSuchElementException("LinkedQueueWithRep");
+		if(times < 0)
+			throw new IllegalArgumentException();
 
+		if (this.front.elem.equals(element)) {
+			if (times >= this.front.num)
+				throw new IllegalArgumentException();
+			else
+				this.front.num -= times;
+			return;
+		}
+
+		QueueWithRepNode<T> aux = this.front;
+		while (aux.next != null) {
+			if (aux.next.elem.equals(element)) {
+				if (times >= aux.next.num)
+					throw new IllegalArgumentException();
+				else
+					aux.next.num -= times;
+				break;
+			}
+			aux = aux.next;
+		}
 	}
 
 	@Override
 	public int remove() throws EmptyCollectionException {
-		if(this.isEmpty())
+		if (this.isEmpty())
 			throw new EmptyCollectionException("LinkedQueueWithRep");
-		
+
 		int apariciones = this.front.num;
-		if(this.front.next == null) {
+		if (this.front.next == null) {
 			this.front = null;
 		} else {
 			QueueWithRepNode<T> nuevoFront = this.front.next;
-			this.front = nuevoFront;	
+			this.front = nuevoFront;
 		}
+		this.count--;
 		return apariciones;
 	}
-	
+
 	@Override
 	public boolean contains(T element) {
+		if(element == null)
+			throw new NullPointerException();
+		
 		QueueWithRepNode<T> aux = this.front;
-		while(aux != null) {
-			if(aux.elem.equals(element)) {
+		while (aux != null) {
+			if (aux.elem.equals(element)) {
 				return true;
 			}
-			aux = aux.next; 
-		}		
+			aux = aux.next;
+		}
 		return false;
 	}
 
@@ -134,10 +211,10 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 	public long size() {
 		long size = 0;
 		QueueWithRepNode<T> aux = this.front;
-		while(aux != null) {
+		while (aux != null) {
 			size += aux.num;
-			aux = aux.next; 
-		}		
+			aux = aux.next;
+		}
 		return size;
 
 	}
@@ -147,7 +224,6 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		return this.count == 0;
 	}
 
-
 	@Override
 	public void clear() {
 		this.front = null;
@@ -156,40 +232,48 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 	@Override
 	public int count(T element) {
+		if(element == null)
+			throw new NullPointerException();
+		
 		if (this.contains(element)) {
 			QueueWithRepNode<T> aux = this.front;
-			for (int i = 0; i < this.find(element)-1; i++) {
+			for (int i = 0; i <= this.find(element) - 1; i++) {
 				aux = aux.next;
 			}
 			return aux.num;
 		}
 		return 0;
-
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return null;
-		// TODO
+		return new LinkedQueueWithRepIterator<T>(this.front);
 	}
 
 	@Override
 	public String toString() {
 
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
 		buffer.append("(");
 
-		// TODO Ir añadiendo en buffer las cadenas para la representación de la cola.
-		// Ejemplo: (A, A, A, B )
+		QueueWithRepNode<T> aux = this.front;
+		while (aux != null) {
+			int apariciones = aux.num;
+			while (apariciones > 0) {
+				buffer.append(aux.elem.toString()).append(" ");
+				apariciones--;
+			}
+			aux = aux.next;
+		}
 
 		buffer.append(")");
 		return buffer.toString();
 	}
-	
+
 	private int find(T element) {
 		int pos = -1;
-		QueueWithRepNode<T> aux = this.front;	
+		QueueWithRepNode<T> aux = this.front;
 		for (int i = 0; i < this.count; i++) {
 			if (aux.elem.equals(element)) {
 				pos = i;

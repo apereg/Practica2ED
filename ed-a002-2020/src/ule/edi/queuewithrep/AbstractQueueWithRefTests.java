@@ -92,27 +92,70 @@ public abstract class AbstractQueueWithRefTests {
 	}
 	
 	@Test
-	public void testCountWrong() {
-		assertEquals(S1.count("H1Z1"), 0);
+	public void testAddFirst() {
+		assertTrue(S1.isEmpty());
+		S1.add("ABC", 3);
+		assertEquals(S1.size(), 3);
+		S1.add("ABC");
+		assertEquals(S1.size(), 4);
 	}
-	
+
+	@Test
+	public void testAddSecond() {
+		assertTrue(S1.isEmpty());
+		S1.add("ABC", 3);
+		S1.add("HHH");
+		assertEquals(S1.size(), 4);
+		assertEquals(S1.count("HHH"), 1);
+	}
+
+	@Test
+	public void testAddSecondMultiple() {
+		assertTrue(S1.isEmpty());
+		S1.add("ABC", 3);
+		S1.add("HHH");
+		S1.add("HHH", 10);
+		assertEquals(S1.size(), 14);
+		assertEquals(S1.count("HHH"), 11);
+	}
+
+	@Test
+	public void testAddThird() {
+		assertEquals(S2.size(), 20);
+		assertEquals(S2.count("XYZ"), 10);
+		S2.add("XYZ", 2);
+		assertEquals(S2.count("XYZ"), 12);
+		assertEquals(S2.size(), 22);
+	}
+
+	@Test
+	public void testAddAnte() {
+		S2.add("HHH");
+		assertEquals(S2.size(), 21);
+		assertEquals(S2.count("XYZ"), 10);
+		S2.add("XYZ", 2);
+		assertEquals(S2.count("XYZ"), 12);
+		assertEquals(S2.size(), 23);
+	}
+
 	@Test
 	public void testAddRedundant() {
 		S2.add("ABC");
 		assertEquals(S2.count("ABC"), 6);
 	}
-	
-	@Test (expected = NoSuchElementException.class)
-	public void testIterator() {
-		Iterator<String> iterator = S2.iterator();
-		assertTrue(iterator.hasNext());
-		assertEquals(iterator.next(), "ABC");
-		iterator.next();
-		iterator.next();
-		assertFalse(iterator.hasNext());
-		iterator.next();
+
+	@Test (expected = IllegalArgumentException.class)
+	public void testAddIllegalTimes() {
+		S1.add("DOOM", -1);
 	}
-	
+
+	@Test
+	public void testRemove() {
+		assertEquals(S2.size(), 20);
+		S2.remove("123", 3);
+		assertEquals(S2.size(), 17);
+	}
+
 	@Test
 	public void testRemoveFirst() throws EmptyCollectionException {
 		assertEquals(S2.remove(), 5);
@@ -124,16 +167,13 @@ public abstract class AbstractQueueWithRefTests {
 		assertEquals(S1.remove(), 1);
 	}
 	
-	@Test (expected = EmptyCollectionException.class)
-	public void testRemoveFirstVoidQueue() throws EmptyCollectionException {
-		S1.remove();
-	}
-	
 	@Test
-	public void testRemove() {
+	public void testRemoveThird() {
 		assertEquals(S2.size(), 20);
-		S2.remove("ABC", 5);
-		assertEquals(S2.size(), 15);
+		assertEquals(S2.count("XYZ"), 10);
+		S2.remove("XYZ", 9);
+		assertEquals(S2.count("XYZ"), 1);
+		assertEquals(S2.size(), 11);
 	}
 	
 	@Test
@@ -142,30 +182,96 @@ public abstract class AbstractQueueWithRefTests {
 		S2.remove("ABC", 2);
 		assertEquals(S2.count("ABC"), 3);
 	}
-	
+
+	@Test (expected = EmptyCollectionException.class)
+	public void testRemoveFirstVoidQueue() throws EmptyCollectionException {
+		S1.remove();
+	}
+
 	@Test
-	public void testRemoveUnique() {
-		assertTrue(S1.isEmpty());
-		S1.add("ABC", 3);
-		assertFalse(S1.isEmpty());
-		S1.remove("ABC", 3);
-		assertTrue(S1.isEmpty());
+	public void testRemoveThirdLessTimes() {
+		assertEquals(S2.size(), 20);
+		assertEquals(S2.count("XYZ"), 10);
+		S2.remove("XYZ", 8);
+		assertEquals(S2.count("XYZ"), 2);
+		assertEquals(S2.size(), 12);
 	}
 	
+	@Test (expected = IllegalArgumentException.class)
+	public void testRemoveThirdMoreTimes() {
+		assertEquals(S2.size(), 20);
+		assertEquals(S2.count("XYZ"), 10);
+		S2.remove("XYZ", 11);
+	}
+
 	@Test (expected = NoSuchElementException.class)
 	public void testRemoveVoidQueue() {
 		S1.remove("H1Z1", 1);
 	}
-	
+
+	@Test (expected = NoSuchElementException.class)
+	public void testRemoveWithOutElementQueue() {
+		S2.remove("H1Z1", 1);
+	}
+
 	@Test (expected = IllegalArgumentException.class)
 	public void testRemoveWrongTimes() {
 		S2.remove("ABC", 150000);
 	}
 	
-	@Test (expected = NoSuchElementException.class)
-	public void testRemoveWithOutElementQueue() {
-		S2.remove("H1Z1", 1);
+	@Test (expected = IllegalArgumentException.class)
+	public void testRemoveNegativeTimes() {
+		S2.remove("ABC", -15);
+	}
+
+	@Test
+	public void testCountWrong() {
+		assertEquals(S1.count("H1Z1"), 0);
 	}
 	
+	@Test (expected = NullPointerException.class)
+	public void testAddNPE() {
+		String str = null;
+		S1.add(str);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testAddTimesNPE() {
+		String str = null;
+		S1.add(str, 10);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testRemoveTimesNPE() {
+		String str = null;
+		S1.remove(str, 10);
+	}
+	
+	
+	@Test (expected = NullPointerException.class)
+	public void testCountNPE() {
+		String str = null;
+		S1.count(str);
+	}
+	
+	@Test (expected = NullPointerException.class)
+	public void testContainstNPE() {
+		String str = null;
+		S1.contains(str);
+	}
+
+	@Test (expected = NoSuchElementException.class)
+	public void testIterator() {
+		S1.add("PUBG", 1);
+		S1.add("CSGO", 3);
+		Iterator<String> iterator = S1.iterator();
+		assertTrue(iterator.hasNext());
+		assertEquals(iterator.next(), "PUBG");
+		assertEquals(iterator.next(), "CSGO");
+		iterator.next();
+		iterator.next();
+		assertFalse(iterator.hasNext());
+		iterator.next();
+	}
 
 }
